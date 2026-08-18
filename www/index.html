@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="My Life - منظم حياتك الشخصي المحلي">
+  <title>My Life</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./assets/icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">M</div><div><strong>My Life</strong><small>Personal Organizer</small></div></div>
+      <nav class="side-nav" aria-label="التنقل الرئيسي">
+        <button data-nav="home" class="active"><span>🏠</span>الرئيسية</button>
+        <button data-nav="notes"><span>📝</span>الملاحظات</button>
+        <button data-nav="expenses"><span>💰</span>مصاريفي</button>
+        <button data-nav="reminders"><span>⏰</span>تنبيهاتي</button>
+        <button data-nav="files"><span>📁</span>ملفاتي</button>
+        <button data-nav="settings"><span>⚙️</span>الإعدادات</button>
+      </nav>
+      <div class="sidebar-foot"><span class="status-dot"></span> يعمل محليًا على جهازك</div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div><small class="eyebrow">My Life</small><h1 id="page-title">الرئيسية</h1></div>
+        <div class="top-actions">
+          <div class="global-search-wrap">
+            <span>⌕</span><input id="global-search" type="search" placeholder="ابحث في كل شيء..." aria-label="بحث شامل">
+            <div id="global-results" class="global-results" hidden></div>
+          </div>
+          <button class="round-btn" data-nav="settings" aria-label="الإعدادات">⚙️</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="app-section active" data-section="home">
+          <div class="hero-panel">
+            <div><span id="home-date" class="hero-date"></span><h2>كل تفاصيل حياتك، في مكان واحد.</h2><p>ملاحظاتك، مصاريفك، مواعيدك وملفاتك محفوظة محليًا وبشكل منظم.</p></div>
+            <div class="hero-orb">✦</div>
+          </div>
+          <div class="metric-grid">
+            <button class="metric-card" data-go="notes"><div class="metric-icon note">📝</div><span>الملاحظات</span><strong id="metric-notes">0</strong><small>ملاحظة محفوظة</small></button>
+            <button class="metric-card" data-go="expenses"><div class="metric-icon money">💰</div><span>مصاريفي</span><strong id="metric-expenses">0 EGP</strong><small>إجمالي المصاريف</small></button>
+            <button class="metric-card" data-go="reminders"><div class="metric-icon alarm">⏰</div><span>تنبيهاتي</span><strong id="metric-reminders">0</strong><small>تنبيه قادم</small></button>
+            <button class="metric-card" data-go="files"><div class="metric-icon file">📁</div><span>ملفاتي</span><strong id="metric-files">0</strong><small>ملف محفوظ</small></button>
+          </div>
+          <div class="home-grid">
+            <section class="panel"><div class="panel-head"><div><span class="section-kicker">آخر نشاط</span><h2>الملاحظات الأخيرة</h2></div><button class="text-btn" data-go="notes">عرض الكل</button></div><div id="recent-notes" class="recent-notes"></div></section>
+            <section class="panel quick-panel"><div class="panel-head"><div><span class="section-kicker">اختصارات</span><h2>إضافة سريعة</h2></div></div><div class="quick-grid"><button id="quick-note">📝<span>ملاحظة</span></button><button id="quick-expense">💰<span>مصروف</span></button><button id="quick-reminder">⏰<span>تنبيه</span></button><button id="quick-file">📁<span>ملف</span></button></div></section>
+          </div>
+        </section>
+
+        <section class="app-section" data-section="notes">
+          <div class="section-toolbar"><div><span class="section-kicker">Notes</span><h2>الملاحظات</h2></div><button class="primary" id="new-note-btn">+ ملاحظة جديدة</button></div>
+          <div class="filterbar"><input id="notes-search" type="search" placeholder="ابحث داخل الملاحظات..."><select id="notes-category-filter"><option value="all">كل التصنيفات</option><option>Personal</option><option>Work</option><option>Travel</option><option>Ideas</option><option>Documents</option><option>Important</option><option>Other</option></select><button class="square-btn" id="notes-view-toggle" title="تغيير العرض">☷</button></div>
+          <div id="notes-container" class="notes-list grid"></div>
+        </section>
+
+        <section class="app-section" data-section="expenses">
+          <div class="section-toolbar"><div><span class="section-kicker">Expense Tracker</span><h2>مصاريفي</h2></div><button class="primary" id="add-expense-btn">+ إضافة مصروف</button></div>
+          <div class="expense-summary"><div><span>إجمالي الفترة</span><strong id="expense-total-large">0 EGP</strong></div><button class="ghost danger-text" id="expense-reset">إعادة ضبط المصاريف</button></div>
+          <div class="stats-strip"><div><span>عدد العمليات</span><strong id="expense-count">0</strong></div><div><span>أكبر مصروف</span><strong id="expense-largest">0 EGP</strong></div><div><span>المتوسط</span><strong id="expense-average">0 EGP</strong></div></div>
+          <div class="chips"><button class="active" data-expense-filter="all">الكل</button><button data-expense-filter="today">اليوم</button><button data-expense-filter="week">آخر 7 أيام</button><button data-expense-filter="month">هذا الشهر</button></div>
+          <div id="expenses-container" class="list-panel"></div>
+        </section>
+
+        <section class="app-section" data-section="reminders">
+          <div class="section-toolbar"><div><span class="section-kicker">Reminders</span><h2>تنبيهاتي</h2></div><button class="primary" id="add-reminder-btn">+ تنبيه جديد</button></div>
+          <div class="info-banner"><span>🔔</span><div><strong>تنبيهات الهاتف</strong><p>في نسخة Android يتم جدولة التنبيه محليًا على الجهاز. اسمح بالإشعارات من الإعدادات أول مرة.</p></div><button class="ghost" data-notification-permission>السماح</button></div>
+          <div id="reminders-container" class="list-panel"></div>
+        </section>
+
+        <section class="app-section" data-section="files">
+          <div class="section-toolbar"><div><span class="section-kicker">Local Files</span><h2>ملفاتي</h2></div><button class="primary" id="add-file-btn">+ إضافة ملف</button></div>
+          <div id="files-container" class="files-list"></div>
+        </section>
+
+        <section class="app-section" data-section="settings">
+          <div class="section-toolbar"><div><span class="section-kicker">Preferences</span><h2>الإعدادات</h2></div></div>
+          <div class="settings-grid">
+            <section class="settings-card"><h3>🎨 المظهر</h3><label>الوضع<select id="appearance-select"><option value="system">حسب النظام</option><option value="light">فاتح</option><option value="dark">داكن</option></select></label><label>اللون الرئيسي<select id="accent-select"></select></label><button class="ghost" id="install-app" hidden>تثبيت التطبيق كـ PWA</button></section>
+            <section class="settings-card"><h3>🔔 الإشعارات</h3><p>اسمح للتطبيق بإظهار التنبيهات.</p><button class="ghost" data-notification-permission>السماح بالإشعارات</button></section>
+            <section class="settings-card"><h3>💾 النسخ الاحتياطي</h3><p>صدّر البيانات النصية والمنظمة إلى JSON، ثم استوردها لاحقًا.</p><div class="settings-actions"><button class="ghost" id="export-data">تصدير البيانات</button><button class="ghost" id="import-data">استيراد البيانات</button></div></section>
+            <section class="settings-card danger-zone"><h3>🧹 التخزين</h3><p>حذف جميع البيانات المحلية من هذا الجهاز.</p><button class="ghost danger-text" id="clear-data">مسح كل البيانات</button></section>
+            <section class="settings-card"><h3>🔒 الحماية</h3><p>هيكل App Lock جاهز للتطوير؛ PIN والبيومتريك سيتم توصيلهما بطبقة Native في الإصدار التالي.</p><button class="ghost" disabled>App Lock — قريبًا</button></section>
+            <section class="settings-card"><h3>ℹ️ عن التطبيق</h3><p><b>My Life</b><br>Version 1.0.0<br>Offline-first • Capacitor-ready</p></section>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <nav class="bottom-nav" aria-label="التنقل السفلي"><button data-nav="home" class="active">🏠<span>Home</span></button><button data-nav="notes">📝<span>Notes</span></button><button data-nav="expenses">💰<span>مصاريفي</span></button><button class="fab-space" disabled></button><button data-nav="reminders">⏰<span>تنبيهات</span></button><button data-nav="settings">⚙️<span>Settings</span></button></nav>
+
+  <button id="main-fab" class="main-fab" aria-label="إضافة جديدة">＋</button>
+  <div id="fab-menu" class="fab-menu"><button id="fab-new-note">📝<span>ملاحظة</span></button><button id="fab-expense">💰<span>مصروف</span></button><button id="fab-reminder">⏰<span>تنبيه</span></button><button id="fab-photo">📷<span>صورة</span></button><button id="fab-voice">🎙️<span>صوت</span></button><button id="fab-file">📁<span>ملف</span></button></div>
+
+  <div id="note-editor" class="fullscreen-sheet" aria-hidden="true">
+    <header class="sheet-head"><button id="note-close" class="round-btn">←</button><input id="note-title" class="note-title-input" placeholder="عنوان الملاحظة"><div class="sheet-head-actions"><button id="note-pin" class="round-btn" title="تثبيت">📌</button><button id="note-favorite" class="round-btn" title="مفضلة">⭐</button><button id="note-save" class="primary">حفظ</button></div></header>
+    <div class="note-meta"><select id="note-category"><option>Personal</option><option>Work</option><option>Travel</option><option>Ideas</option><option>Documents</option><option>Important</option><option>Other</option></select><input id="note-tags" placeholder="Tags مفصولة بفاصلة"><select id="note-bg"></select><select id="note-color"></select></div>
+    <div class="add-toolbar"><button id="add-text">📝 نص</button><button id="add-rich">✍️ منسق</button><button id="add-image">🖼️ صورة</button><button id="add-camera">📷 كاميرا</button><button id="add-video">🎬 فيديو</button><button id="add-audio">🎧 صوت</button><button id="add-record">🎙️ تسجيل</button><button id="add-pdf">📕 PDF</button><button id="add-doc">📘 Word</button><button id="add-txt">📄 TXT</button><button id="add-link">🔗 رابط</button><button id="add-file">📎 ملف</button></div>
+    <div id="recording-indicator" class="recording" hidden><span></span> جاري التسجيل <button id="recording-stop">إيقاف وحفظ</button></div>
+    <main id="note-blocks" class="note-blocks"></main>
+    <footer class="sheet-footer"><button id="note-delete" class="ghost danger-text">حذف الملاحظة</button></footer>
+  </div>
+
+  <div id="file-preview" class="fullscreen-sheet viewer-sheet"><header class="sheet-head"><button id="file-preview-close" class="round-btn">←</button><h2 id="file-preview-title">ملف</h2></header><div id="file-preview-content" class="viewer-content"></div></div>
+
+  <dialog id="expense-dialog" class="modal"><form method="dialog"><div class="modal-head"><h2>إضافة مصروف</h2><button id="expense-cancel" type="button">✕</button></div><label>الوصف<input id="expense-description" placeholder="مثال: مشتريات المنزل"></label><label>التصنيف<select id="expense-category"></select></label><label>المبلغ<input id="expense-amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></label><div id="calculator" class="calculator"><input id="calculator-display" readonly placeholder="250 + 150 + 75"><div class="calc-grid"><button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button><button data-key="÷">÷</button><button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button data-key="×">×</button><button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button data-key="-">−</button><button data-key="0">0</button><button data-key=".">.</button><button data-key="%">%</button><button data-key="+">+</button><button data-key="C" class="muted">C</button><button data-key="=" class="equals">=</button></div></div><button id="expense-save" type="button" class="primary wide">حفظ المصروف</button></form></dialog>
+
+  <dialog id="reminder-dialog" class="modal"><form method="dialog"><div class="modal-head"><h2>تنبيه</h2><button id="reminder-cancel" type="button">✕</button></div><label>العنوان<input id="reminder-title" placeholder="موعد الدكتور"></label><label>ملاحظة<textarea id="reminder-note" placeholder="تفاصيل اختيارية"></textarea></label><label>التاريخ والوقت<input id="reminder-datetime" type="datetime-local"></label><label>التكرار<select id="reminder-repeat"><option value="once">مرة واحدة</option><option value="daily">يومي</option><option value="weekly">أسبوعي</option><option value="monthly">شهري</option><option value="yearly">سنوي</option></select></label><button id="reminder-save" type="button" class="primary wide">حفظ وجدولة</button></form></dialog>
+
+  <dialog id="confirm-dialog" class="modal confirm-modal"><form method="dialog"><h2 data-title>تأكيد</h2><p data-message></p><div class="confirm-actions"><button data-cancel type="button" class="ghost">إلغاء</button><button data-confirm type="button" class="primary">تأكيد</button></div></form></dialog>
+  <div id="toast-host" class="toast-host"></div>
+
+  <script src="./js/bootstrap.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "appId": "com.mylife.organizer",
+  "appName": "My Life",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "presentationOptions": ["badge", "sound", "banner", "list"]
+    }
+  }
+}
