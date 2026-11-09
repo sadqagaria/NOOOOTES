@@ -101,7 +101,7 @@ async function hydrateDocxBlocks(blocks) {
 }
 
 function bindBlockInteractions() {
-  $('#note-blocks .editor-block').forEach(block => {
+  $$('#note-blocks .editor-block').forEach(block => {
     const head = block.querySelector('.block-head');
     if (!head || head.querySelector('.block-reorder')) return;
     const wrapper=document.createElement('span');wrapper.className='block-reorder';
