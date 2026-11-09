@@ -253,17 +253,30 @@ export function initNotesUI() {
   $('#add-text').onclick = () => appendBlock({id:uid(),type:'text',text:''});
   $('#add-rich').onclick = () => appendBlock({id:uid(),type:'rich',html:''});
   $('#add-link').onclick = () => appendBlock({id:uid(),type:'link',text:'',url:''});
-  $('#note-blocks').addEventListener('change', event => {
-    if (event.target.matches('.link-title,.link-url')) {
-      const block=event.target.closest('.editor-block');
-      const title=block.querySelector('.link-title')?.value||'';
-      const url=block.querySelector('.link-url')?.value||'';
-      const html=blockTemplate({id:block.dataset.blockId,type:'link',text:title,url});
-      const wrap=document.createElement('div');wrap.innerHTML=html;
-      block.replaceWith(wrap.firstElementChild);
-      bindBlockInteractions();
+  const updateLiveLinkPreview = event => {
+    if (!event.target.matches('.link-title,.link-url')) return;
+    const block=event.target.closest('.editor-block');
+    if (!block) return;
+    const title=block.querySelector('.link-title')?.value||'';
+    const link=block.querySelector('.link-url')?.value?.trim()||'';
+    let card=block.querySelector('.note-link-preview');
+    let parsed;
+    try { parsed=new URL(link);if (!['http:','https:'].includes(parsed.protocol)) throw Error('Unsupported protocol'); }
+    catch {card?.remove();return;}
+    if (!card) {
+      card=document.createElement('a');
+      card.className='note-link-preview';
+      card.target='_blank';
+      card.rel='noopener noreferrer';
+      block.appendChild(card);
     }
-  });
+    card.href=parsed.href;
+    card.innerHTML='<span class="link-bubble">🔗</span><span class="link-info"><span></span><small></small></span><span>↗</span>';
+    card.querySelector('.link-info span').textContent=title||parsed.hostname;
+    card.querySelector('.link-info small').textContent=parsed.hostname;
+  };
+  $('#note-blocks').addEventListener('input',updateLiveLinkPreview);
+  $('#note-blocks').addEventListener('change',updateLiveLinkPreview);
   $('#add-image').onclick = () => addFiles('image/*');
   $('#add-camera').onclick = () => addFiles('image/*', 'image', true);
   $('#add-video').onclick = () => addFiles('video/*');
