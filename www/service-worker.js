@@ -1,6 +1,6 @@
-const CACHE='my-life-web-v2';
+const CACHE='mofakkirati-glass-v1';
 const ASSETS=[
-  './','./index.html','./css/style.css','./manifest.webmanifest',
+  './','./index.html','./css/style.css','./css/mofakkirati-theme.css','./manifest.webmanifest',
   './assets/icons/icon-192.png','./assets/icons/icon-512.png',
   './js/bootstrap.js','./js/app.web.js','./js/capacitor-web.js',
   './js/utils.js','./js/storage.js','./js/notes.js','./js/expenses.js',
