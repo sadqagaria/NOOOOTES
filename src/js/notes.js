@@ -1,4 +1,5 @@
 import { getAll, getById, put, remove } from './storage.js';
+import { beginVoiceRecording, isVoiceRecording, prepareVoiceRecorderUI } from './voice-recorder.js';
 import DOMPurify from 'dompurify';
 import {renderAsync as renderDOCX} from 'docx-preview';
 import { $, $$, uid, escapeHTML, stripHTML, formatDate, toast, confirmDialog, fileIcon } from './utils.js';
@@ -174,21 +175,16 @@ async function addFiles(accept, forcedType, capture = false) {
 }
 
 async function recordAudio() {
-  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) return toast('تسجيل الصوت غير مدعوم في هذا المتصفح');
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const recorder = new MediaRecorder(stream);
-  const chunks = [];
-  recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
-  recorder.onstop = () => {
-    stream.getTracks().forEach(t => t.stop());
-    const blob = new Blob(chunks, { type: recorder.mimeType || 'audio/webm' });
-    appendBlock({ id: uid(), type:'audio', name:`recording-${Date.now()}.webm`, mime:blob.type, size:blob.size, blob, createdAt:new Date().toISOString() });
-    toast('تمت إضافة التسجيل للملاحظة');
-  };
-  recorder.start();
-  const stopBtn = $('#recording-stop');
-  $('#recording-indicator').hidden = false;
-  stopBtn.onclick = () => { if (recorder.state !== 'inactive') recorder.stop(); $('#recording-indicator').hidden = true; };
+  const note=$('#recording-error');
+  if(note){note.hidden=true;note.textContent='';}
+  return beginVoiceRecording(async recording => {
+    appendBlock({
+      id:uid(),type:'audio',name:recording.name,mime:recording.mime,
+      size:recording.size,blob:recording.blob,duration:recording.duration,
+      createdAt:new Date().toISOString()
+    });
+    toast('تم تسجيل الصوت وإضافته. اضغط حفظ الملاحظة للاحتفاظ به.');
+  });
 }
 
 function readMeta(note) {
@@ -216,6 +212,7 @@ export async function openNoteEditor(id = null) {
 }
 
 export function closeNoteEditor() {
+  if (isVoiceRecording()) {toast('أنهِ التسجيل أو ألغِه قبل الخروج من الملاحظة.');return;}
   cleanupUrls();
   $('#note-editor').classList.remove('open');
   $('#note-editor').setAttribute('aria-hidden','true');
@@ -224,6 +221,7 @@ export function closeNoteEditor() {
 }
 
 async function saveCurrentNote() {
+  if (isVoiceRecording()) {toast('أنهِ التسجيل أولًا ثم احفظ الملاحظة.');return;}
   const old = activeNoteId ? await getById('notes', activeNoteId) : null;
   const now = new Date().toISOString();
   const note = {
@@ -274,7 +272,8 @@ export function initNotesUI() {
   $('#add-doc').onclick = () => addFiles('.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document','file');
   $('#add-txt').onclick = () => addFiles('text/plain','file');
   $('#add-file').onclick = () => addFiles('*/*');
-  $('#add-record').onclick = () => recordAudio().catch(() => toast('تعذر الوصول إلى الميكروفون'));
+  prepareVoiceRecorderUI();
+  $('#add-record').onclick = () => recordAudio().catch(error => {console.error(error);toast('تعذر بدء التسجيل، راجع صلاحيات الميكروفون.');});
 
   $('#note-delete').onclick = async () => {
     if (!activeNoteId) return closeNoteEditor();
