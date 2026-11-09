@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
-  <meta name="description" content="My Life - منظم حياتك الشخصي المحلي">
-  <title>My Life</title>
+  <meta name="theme-color" content="#7655e9">
+  <meta name="description" content="مفكرتي - أفكارك ومستنداتك وصوتك في مكان واحد">
+  <title>مفكرتي | Mofakkirati</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./assets/icons/icon-192.png">
   <link rel="stylesheet" href="./css/style.css">
@@ -14,12 +14,13 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">M</div><div><strong>My Life</strong><small>Personal Organizer</small></div></div>
+      <div class="brand"><div class="brand-mark">✦</div><div><strong>مفكرتي</strong><small>My creative space</small></div></div>
       <nav class="side-nav" aria-label="التنقل الرئيسي">
         <button data-nav="home" class="active"><span>🏠</span>الرئيسية</button>
         <button data-nav="notes"><span>📝</span>الملاحظات</button>
         <button data-nav="expenses"><span>💰</span>مصاريفي</button>
         <button data-nav="reminders"><span>⏰</span>تنبيهاتي</button>
+        <button data-nav="studio"><span>📄</span>استوديو PDF</button>
         <button data-nav="files"><span>📁</span>ملفاتي</button>
         <button data-nav="settings"><span>⚙️</span>الإعدادات</button>
       </nav>
@@ -28,7 +29,7 @@
 
     <main class="main-area">
       <header class="topbar">
-        <div><small class="eyebrow">My Life</small><h1 id="page-title">الرئيسية</h1></div>
+        <div><small class="eyebrow">MOFAKKIRATI · GLASS EDITION</small><h1 id="page-title">الرئيسية</h1></div>
         <div class="top-actions">
           <div class="global-search-wrap">
             <span>⌕</span><input id="global-search" type="search" placeholder="ابحث في كل شيء..." aria-label="بحث شامل">
@@ -41,7 +42,7 @@
       <div class="content">
         <section class="app-section active" data-section="home">
           <div class="hero-panel">
-            <div><span id="home-date" class="hero-date"></span><h2>كل تفاصيل حياتك، في مكان واحد.</h2><p>ملاحظاتك، مصاريفك، مواعيدك وملفاتك محفوظة محليًا وبشكل منظم.</p></div>
+            <div><span id="home-date" class="hero-date"></span><h2>كل أفكارك، في عالم واحد.</h2><p>مساحتك الإبداعية للملاحظات والتسجيلات والمستندات والأفكار، محفوظة عندك بأمان.</p></div>
             <div class="hero-orb">✦</div>
           </div>
           <div class="metric-grid">
@@ -89,14 +90,14 @@
             <section class="settings-card"><h3>💾 النسخ الاحتياطي</h3><p>صدّر البيانات النصية والمنظمة إلى JSON، ثم استوردها لاحقًا.</p><div class="settings-actions"><button class="ghost" id="export-data">تصدير البيانات</button><button class="ghost" id="import-data">استيراد البيانات</button></div></section>
             <section class="settings-card danger-zone"><h3>🧹 التخزين</h3><p>حذف جميع البيانات المحلية من هذا الجهاز.</p><button class="ghost danger-text" id="clear-data">مسح كل البيانات</button></section>
             <section class="settings-card"><h3>🔒 الحماية</h3><p>هيكل App Lock جاهز للتطوير؛ PIN والبيومتريك سيتم توصيلهما بطبقة Native في الإصدار التالي.</p><button class="ghost" disabled>App Lock — قريبًا</button></section>
-            <section class="settings-card"><h3>ℹ️ عن التطبيق</h3><p><b>My Life</b><br>Version 1.0.0<br>Offline-first • Capacitor-ready</p></section>
+            <section class="settings-card"><h3>ℹ️ عن التطبيق</h3><p><b>مفكرتي · Glass Edition</b><br>Version 1.2.0<br>Offline-first • Local-first</p></section>
           </div>
         </section>
       </div>
     </main>
   </div>
 
-  <nav class="bottom-nav" aria-label="التنقل السفلي"><button data-nav="home" class="active">🏠<span>Home</span></button><button data-nav="notes">📝<span>Notes</span></button><button data-nav="expenses">💰<span>مصاريفي</span></button><button class="fab-space" disabled></button><button data-nav="reminders">⏰<span>تنبيهات</span></button><button data-nav="settings">⚙️<span>Settings</span></button></nav>
+  <nav class="bottom-nav" aria-label="التنقل السفلي"><button data-nav="home" class="active">🏠<span>Home</span></button><button data-nav="notes">📝<span>Notes</span></button><button data-nav="expenses">💰<span>مصاريفي</span></button><button class="fab-space" disabled></button><button data-nav="reminders">⏰<span>تنبيهات</span></button><button data-nav="studio">📄<span>PDF</span></button><button data-nav="settings">⚙️<span>ضبط</span></button></nav>
 
   <button id="main-fab" class="main-fab" aria-label="إضافة جديدة">＋</button>
   <div id="fab-menu" class="fab-menu"><button id="fab-new-note">📝<span>ملاحظة</span></button><button id="fab-expense">💰<span>مصروف</span></button><button id="fab-reminder">⏰<span>تنبيه</span></button><button id="fab-photo">📷<span>صورة</span></button><button id="fab-voice">🎙️<span>صوت</span></button><button id="fab-file">📁<span>ملف</span></button></div>
