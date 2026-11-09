@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { initDocumentStudio } from './document-studio.js';
+import { initQuickCapture } from './quick-capture.js';
 import { $, $$, escapeHTML, formatMoney } from './utils.js';
 import { initNotesUI, renderNotes, getNotes, openNoteEditor, setNotesRefreshCallback } from './notes.js';
 import { initExpensesUI, renderExpenses, getExpenseStats, openExpenseDialog, setExpensesRefreshCallback } from './expenses.js';
@@ -93,7 +94,7 @@ async function init(){
   initNavigation(); initFilters(); initNotesUI(); initExpensesUI(); initRemindersUI(); initFilesUI(); initSettingsUI(); initDocumentStudio();
   const cb=refreshAll;
   setNotesRefreshCallback(cb); setExpensesRefreshCallback(cb); setRemindersRefreshCallback(cb); setFilesRefreshCallback(cb); setSettingsRefreshCallback(cb);
-  startWebReminderWatcher(); registerPWA(); await refreshAll();
+  initQuickCapture(refreshAll); startWebReminderWatcher(); registerPWA(); await refreshAll();
   document.body.classList.add('ready');
 }
 
