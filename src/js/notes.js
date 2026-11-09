@@ -1,4 +1,6 @@
 import { getAll, getById, put, remove } from './storage.js';
+import DOMPurify from 'dompurify';
+import {renderAsync as renderDOCX} from 'docx-preview';
 import { $, $$, uid, escapeHTML, stripHTML, formatDate, toast, confirmDialog, fileIcon } from './utils.js';
 
 const COLORS = ['#2563eb','#0ea5e9','#0f766e','#059669','#166534','#65a30d','#ca8a04','#ea580c','#f97316','#dc2626','#e11d48','#ec4899','#9333ea','#7c3aed','#4f46e5','#475569'];
@@ -53,8 +55,18 @@ function cleanupUrls() {
 
 function blockTemplate(block) {
   if (block.type === 'text') return `<div class="editor-block" data-block-id="${block.id}" data-type="text"><div class="block-head"><span>📝 نص</span><button data-remove-block aria-label="حذف العنصر">✕</button></div><textarea class="plain-block" placeholder="اكتب هنا...">${escapeHTML(block.text || '')}</textarea></div>`;
-  if (block.type === 'rich') return `<div class="editor-block" data-block-id="${block.id}" data-type="rich"><div class="block-head"><span>✍️ نص منسق</span><button data-remove-block>✕</button></div><div class="rich-toolbar"><button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button><button data-cmd="insertUnorderedList">• List</button><button data-cmd="insertOrderedList">1. List</button></div><div class="rich-block" contenteditable="true" data-placeholder="اكتب نصًا منسقًا...">${block.html || ''}</div></div>`;
-  if (block.type === 'link') return `<div class="editor-block" data-block-id="${block.id}" data-type="link"><div class="block-head"><span>🔗 رابط</span><button data-remove-block>✕</button></div><input class="link-title" value="${escapeHTML(block.text || '')}" placeholder="اسم الرابط"><input class="link-url" value="${escapeHTML(block.url || '')}" placeholder="https://example.com" inputmode="url"></div>`;
+  if (block.type === 'rich') return `<div class="editor-block" data-block-id="${block.id}" data-type="rich"><div class="block-head"><span>✍️ نص منسق</span><button data-remove-block>✕</button></div><div class="rich-toolbar"><button data-cmd="bold"><b>B</b></button><button data-cmd="italic"><i>I</i></button><button data-cmd="underline"><u>U</u></button><button data-cmd="insertUnorderedList">• List</button><button data-cmd="insertOrderedList">1. List</button></div><div class="rich-block" contenteditable="true" data-placeholder="اكتب نصًا منسقًا...">${DOMPurify.sanitize(block.html || '', {USE_PROFILES:{html:true}})}</div></div>`;
+  if (block.type === 'link') {
+    let card='';
+    try{
+      const parsed=new URL(block.url||'');
+      if(['http:','https:'].includes(parsed.protocol)){
+        const displayTitle=escapeHTML(block.text||parsed.hostname);
+        card=`<a class="note-link-preview" href="${escapeHTML(parsed.href)}" target="_blank" rel="noopener noreferrer"><span class="link-bubble">🔗</span><span class="link-info"><span>${displayTitle}</span><small>${escapeHTML(parsed.hostname)}</small></span><span>↗</span></a>`;
+      }
+    }catch{}
+    return `<div class="editor-block" data-block-id="${block.id}" data-type="link"><div class="block-head"><span>🔗 رابط ذكي</span><button data-remove-block aria-label="حذف الرابط">✕</button></div><input class="link-title" value="${escapeHTML(block.text||'')}" placeholder="اسم الرابط"><input class="link-url" value="${escapeHTML(block.url||'')}" placeholder="https://example.com" inputmode="url">${card}</div>`;
+  }
   const type = block.mime || '';
   let preview = '';
   if (block.blob instanceof Blob) {
@@ -63,6 +75,7 @@ function blockTemplate(block) {
     else if (type.startsWith('video/')) preview = `<video class="media-preview" src="${url}" controls preload="metadata"></video>`;
     else if (type.startsWith('audio/')) preview = `<audio src="${url}" controls preload="metadata"></audio>`;
     else if (type.includes('pdf')) preview = `<iframe class="pdf-preview" src="${url}" title="PDF preview"></iframe>`;
+    else if (/\.docx$/i.test(block.name || '') || type.includes('wordprocessingml')) preview = `<div class="note-docx-viewer" data-docx="${escapeHTML(block.id)}"><p>جارٍ تجهيز معاينة Word...</p></div><a class="note-docx-download" href="${url}" download="${escapeHTML(block.name || 'document.docx')}">تنزيل ملف Word الأصلي</a>`;
   }
   return `<div class="editor-block file-block" data-block-id="${block.id}" data-type="${escapeHTML(block.type)}"><div class="block-head"><span>${fileIcon(type)} ${escapeHTML(block.name || 'ملف')}</span><button data-remove-block>✕</button></div>${preview}<div class="file-meta">${escapeHTML(type || 'ملف')} • ${Math.max(1, Math.round((block.size || 0)/1024))} KB</div></div>`;
 }
@@ -72,10 +85,37 @@ function renderBlocks(note) {
   cleanupUrls();
   host.innerHTML = (note.blocks || []).map(blockTemplate).join('');
   bindBlockInteractions();
+  hydrateDocxBlocks(note.blocks || []);
+}
+
+async function hydrateDocxBlocks(blocks) {
+  for (const block of blocks) {
+    if (!(block.blob instanceof Blob)) continue;
+    if (!(/\.docx$/i.test(block.name || '') || String(block.mime || '').includes('wordprocessingml'))) continue;
+    const host = [...document.querySelectorAll('.note-docx-viewer')].find(x => x.dataset.docx === block.id);
+    if (!host) continue;
+    try { await renderDOCX(block.blob, host, null, {breakPages:true, ignoreLastRenderedPageBreak:false}); }
+    catch (error) { console.warn('DOCX preview unavailable',error); host.textContent='تعذرت معاينة Word، لكن الملف الأصلي محفوظ ويمكن تنزيله.'; }
+  }
 }
 
 function bindBlockInteractions() {
-  $$('#note-blocks [data-remove-block]').forEach(btn => btn.onclick = () => btn.closest('.editor-block').remove());
+  $('#note-blocks .editor-block').forEach(block => {
+    const head = block.querySelector('.block-head');
+    if (!head || head.querySelector('.block-reorder')) return;
+    const wrapper=document.createElement('span');wrapper.className='block-reorder';
+    for (const [symbol,direction] of [['↑',-1],['↓',1]]) {
+      const button=document.createElement('button');button.type='button';button.textContent=symbol;button.title=direction<0?'تحريك لأعلى':'تحريك لأسفل';
+      button.onclick=()=>{
+        const parent=block.parentNode;
+        if(direction<0 && block.previousElementSibling) parent.insertBefore(block,block.previousElementSibling);
+        if(direction>0 && block.nextElementSibling) parent.insertBefore(block.nextElementSibling,block);
+      };
+      wrapper.appendChild(button);
+    }
+    head.insertBefore(wrapper,head.querySelector('[data-remove-block]'));
+  });
+  $('#note-blocks [data-remove-block]').forEach(btn => btn.onclick = () => btn.closest('.editor-block').remove());
   $$('#note-blocks [data-cmd]').forEach(btn => btn.onclick = () => {
     const rich = btn.closest('.editor-block').querySelector('.rich-block');
     rich.focus();
@@ -88,7 +128,7 @@ function collectBlocks() {
     const type = el.dataset.type;
     const existing = el._blockData || {};
     if (type === 'text') return { id: el.dataset.blockId, type, text: $('.plain-block', el).value };
-    if (type === 'rich') return { id: el.dataset.blockId, type, html: $('.rich-block', el).innerHTML };
+    if (type === 'rich') return { id: el.dataset.blockId, type, html: DOMPurify.sanitize($('.rich-block', el).innerHTML, {USE_PROFILES:{html:true}}) };
     if (type === 'link') return { id: el.dataset.blockId, type, text: $('.link-title', el).value, url: $('.link-url', el).value };
     return existing.id ? existing : { id: el.dataset.blockId, type };
   });
@@ -107,6 +147,7 @@ function appendBlock(block) {
   el._blockData = block;
   host.appendChild(el);
   bindBlockInteractions();
+  hydrateDocxBlocks([block]);
   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -214,6 +255,17 @@ export function initNotesUI() {
   $('#add-text').onclick = () => appendBlock({id:uid(),type:'text',text:''});
   $('#add-rich').onclick = () => appendBlock({id:uid(),type:'rich',html:''});
   $('#add-link').onclick = () => appendBlock({id:uid(),type:'link',text:'',url:''});
+  $('#note-blocks').addEventListener('change', event => {
+    if (event.target.matches('.link-title,.link-url')) {
+      const block=event.target.closest('.editor-block');
+      const title=block.querySelector('.link-title')?.value||'';
+      const url=block.querySelector('.link-url')?.value||'';
+      const html=blockTemplate({id:block.dataset.blockId,type:'link',text:title,url});
+      const wrap=document.createElement('div');wrap.innerHTML=html;
+      block.replaceWith(wrap.firstElementChild);
+      bindBlockInteractions();
+    }
+  });
   $('#add-image').onclick = () => addFiles('image/*');
   $('#add-camera').onclick = () => addFiles('image/*', 'image', true);
   $('#add-video').onclick = () => addFiles('video/*');
