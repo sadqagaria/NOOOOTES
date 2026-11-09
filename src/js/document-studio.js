@@ -24,6 +24,7 @@ function render(){
  $('#studio-merge').disabled=pdfFiles().length<2;
  $('#studio-split').disabled=$('#studio-rotate').disabled=pdfFiles().length<1;
  $('#studio-to-pdf').disabled=$('#studio-image-save').disabled=imageFiles().length<1;
+ $('#studio-delete-pages').disabled=$('#studio-reverse').disabled=pdfFiles().length<1;
  showImage();
 }
 function add(files){for(const f of files)if(f.type.startsWith('image/')||f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf'))entries.push(f);render();}
@@ -47,6 +48,23 @@ async function rotate(){
  const doc=await PDFDocument.load(await pdfFiles()[0].arrayBuffer());
  for(const i of pageIDs($('#studio-pages').value,doc.getPageCount())){const p=doc.getPage(i);p.setRotation(degrees((p.getRotation().angle+Number($('#studio-angle').value))%360));}
  download(await doc.save(),'mofakkirati-rotated.pdf');
+}
+async function removePages(){
+ const src=await PDFDocument.load(await pdfFiles()[0].arrayBuffer());
+ const ids=new Set(pageIDs($('#studio-pages').value,src.getPageCount()));
+ if(!$('#studio-pages').value.trim())throw Error('اكتب أرقام الصفحات المطلوب حذفها');
+ if(ids.size>=src.getPageCount())throw Error('يجب الاحتفاظ بصفحة واحدة على الأقل');
+ const out=await PDFDocument.create();
+ const keep=src.getPageIndices().filter(i=>!ids.has(i));
+ (await out.copyPages(src,keep)).forEach(page=>out.addPage(page));
+ download(await out.save(),'mofakkirati-removed-pages.pdf');
+}
+async function reversePages(){
+ const src=await PDFDocument.load(await pdfFiles()[0].arrayBuffer());
+ const out=await PDFDocument.create();
+ const order=src.getPageIndices().reverse();
+ (await out.copyPages(src,order)).forEach(page=>out.addPage(page));
+ download(await out.save(),'mofakkirati-reordered.pdf');
 }
 async function imageCanvas(f){
  const image=await createImageBitmap(f),c=document.createElement('canvas');const k=Math.min(1,2300/Math.max(image.width,image.height));
@@ -91,7 +109,7 @@ function run(fn){msg('جاري المعالجة محليًا...');Promise.resolv
 export function initDocumentStudio(){
  if($('#studio-panel'))return;
  const style=document.createElement('style');style.textContent='.studio-body{display:grid;gap:14px}.studio-card{background:var(--surface);border:1px solid var(--border);padding:16px;border-radius:18px}.studio-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.studio-buttons button,.studio-item button{border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:11px;border-radius:10px;min-height:43px}.studio-buttons button:disabled{opacity:.4}.studio-item{display:flex;gap:8px;align-items:center;padding:9px;border-bottom:1px solid var(--border)}.studio-item span{flex:1;overflow-wrap:anywhere}.studio-card select,.studio-card input{padding:8px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);max-width:100%}#studio-canvas{display:block;max-width:100%;max-height:55vh;margin:auto}#studio-status{font-weight:600;color:var(--accent)}';document.head.append(style);
- const section=document.createElement('section');section.id='studio-panel';section.className='app-section';section.dataset.section='studio';section.innerHTML='<div class="studio-body"><div class="studio-card"><h2>📄 استوديو المستندات</h2><p>دمج وتقسيم وتدوير PDF وتحسين صور الأوراق على جهازك دون رفعها للسحابة، مع الحفاظ على النسخ الأصلية.</p><div class="studio-buttons"><button id="studio-pick">＋ إضافة PDF أو صورة</button><button id="studio-camera">📷 تصوير ورقة</button><button id="studio-clear">مسح القائمة</button></div><input id="studio-input" type="file" accept="application/pdf,.pdf,image/*" multiple hidden><input id="studio-camera-input" type="file" accept="image/*" capture="environment" hidden><div id="studio-list"></div><p id="studio-status" role="status"></p></div><div class="studio-card"><h3>أدوات PDF</h3><label>الصفحات المطلوبة (مثل 1,3-5) <input id="studio-pages" placeholder="الكل"></label> <label>زاوية التدوير <select id="studio-angle"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label><div class="studio-buttons"><button id="studio-merge">دمج PDF</button><button id="studio-split">استخراج صفحات</button><button id="studio-rotate">تدوير صفحات</button><button id="studio-to-pdf">صور إلى PDF</button></div></div><div class="studio-card"><h3>✨ تحسين الصور والمستندات</h3><label>اختر الصورة <select id="studio-image-select"></select></label><div class="studio-buttons"><label>الفلتر <select id="studio-filter"><option value="original">أصلي</option><option value="clean" selected>ورق نظيف</option><option value="print">طباعة</option><option value="bw">أبيض وأسود</option><option value="gray">رمادي</option><option value="light">تفتيح</option><option value="vivid">ألوان واضحة</option></select></label><label>قوة الفلتر <input id="studio-strength" type="range" min="0" max="100" value="75"></label><button id="studio-image-save">حفظ نسخة محسنة</button></div><canvas id="studio-canvas"></canvas></div></div>';
+ const section=document.createElement('section');section.id='studio-panel';section.className='app-section';section.dataset.section='studio';section.innerHTML='<div class="studio-body"><div class="studio-card"><h2>📄 استوديو المستندات</h2><p>دمج وتقسيم وتدوير PDF وتحسين صور الأوراق على جهازك دون رفعها للسحابة، مع الحفاظ على النسخ الأصلية.</p><div class="studio-buttons"><button id="studio-pick">＋ إضافة PDF أو صورة</button><button id="studio-camera">📷 تصوير ورقة</button><button id="studio-clear">مسح القائمة</button></div><input id="studio-input" type="file" accept="application/pdf,.pdf,image/*" multiple hidden><input id="studio-camera-input" type="file" accept="image/*" capture="environment" hidden><div id="studio-list"></div><p id="studio-status" role="status"></p></div><div class="studio-card"><h3>أدوات PDF</h3><label>الصفحات المطلوبة (مثل 1,3-5) <input id="studio-pages" placeholder="الكل"></label> <label>زاوية التدوير <select id="studio-angle"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></label><div class="studio-buttons"><button id="studio-merge">دمج PDF</button><button id="studio-split">استخراج صفحات</button><button id="studio-rotate">تدوير صفحات</button><button id="studio-to-pdf">صور إلى PDF</button><button id="studio-delete-pages">حذف صفحات</button><button id="studio-reverse">عكس ترتيب الصفحات</button></div></div><div class="studio-card"><h3>✨ تحسين الصور والمستندات</h3><label>اختر الصورة <select id="studio-image-select"></select></label><div class="studio-buttons"><label>الفلتر <select id="studio-filter"><option value="original">أصلي</option><option value="clean" selected>ورق نظيف</option><option value="print">طباعة</option><option value="bw">أبيض وأسود</option><option value="gray">رمادي</option><option value="light">تفتيح</option><option value="vivid">ألوان واضحة</option></select></label><label>قوة الفلتر <input id="studio-strength" type="range" min="0" max="100" value="75"></label><button id="studio-image-save">حفظ نسخة محسنة</button></div><canvas id="studio-canvas"></canvas></div></div>';
  $('.content').append(section);
  const nav=document.querySelector('.side-nav [data-nav="studio"]') || (()=>{const b=document.createElement('button');b.dataset.nav='studio';b.innerHTML='<span>📄</span>استوديو PDF';$('.side-nav').append(b);return b;})();
  for(const selector of ['.quick-grid','.add-toolbar']){
@@ -106,6 +124,7 @@ export function initDocumentStudio(){
  $('#studio-clear').onclick=()=>{entries=[];render();};
  $('#studio-merge').onclick=()=>run(merge);$('#studio-split').onclick=()=>run(extract);
  $('#studio-rotate').onclick=()=>run(rotate);$('#studio-to-pdf').onclick=()=>run(toPDF);
+ $('#studio-delete-pages').onclick=()=>run(removePages);$('#studio-reverse').onclick=()=>run(reversePages);
  $('#studio-image-save').onclick=()=>run(saveImage);
  $('#studio-image-select').onchange=showImage;$('#studio-filter').onchange=showImage;$('#studio-strength').oninput=showImage;
  render();
