@@ -369,3 +369,110 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
  .quick-spark{width:44px;height:44px}
  .note-docx-viewer .docx-wrapper{padding:0!important}
 }
+
+
+/* V3 Aref typography: font assets bundled into the APK for offline availability */
+@font-face {
+  font-family:"Aref Ruqaa";
+  src:url("../assets/fonts/ArefRuqaa-Regular.ttf") format("truetype");
+  font-style:normal;font-weight:400;font-display:swap
+}
+@font-face {
+  font-family:"Aref Ruqaa";
+  src:url("../assets/fonts/ArefRuqaa-Bold.ttf") format("truetype");
+  font-style:normal;font-weight:700 900;font-display:swap
+}
+:root{
+  --ui-font:"Aref Ruqaa",Tahoma,Arial,sans-serif;
+  font-family:var(--ui-font);
+}
+body,button,input,textarea,select,option,.studio-card,.editor-block,.note-card,
+.modal,.panel,.sidebar,.topbar,.bottom-nav,.fab-menu,.hero-panel,
+.global-results,.settings-card,.stat-strip,.file-card{
+  font-family:var(--ui-font)!important
+}
+body{font-size:17px}
+button,select,option,input,textarea{font-size:16px}
+.brand strong,.topbar h1,.hero-panel h2,.section-toolbar h2,.panel-head h2{font-family:var(--ui-font)!important;line-height:1.55}
+.note-card h3,.quick-capture-head h2{font-size:21px;line-height:1.55}
+.note-card p,.quick-capture-head p{font-size:16px;line-height:1.65}
+.metric-card span,.file-info span,.note-card footer{font-size:14px}
+.bottom-nav button span{font-size:12px}
+.note-title-input{font-size:27px}
+.note-blocks{scroll-behavior:smooth}
+.note-blocks .plain-block,.note-blocks .rich-block{font-size:18px;line-height:1.8}
+.note-blocks .plain-block{resize:vertical}
+/* Dedicated audio recorder, no inert buttons */
+#recording-indicator[hidden],#recording-error[hidden],[hidden]{display:none!important}
+.recording{
+  max-width:1010px;
+  margin:12px auto;
+  padding:18px;
+  border-radius:23px;
+  display:block;
+  background:linear-gradient(135deg,rgba(255,255,255,.93),rgba(237,231,255,.89));
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:0 13px 30px rgba(100,80,172,.14);
+  color:#182b60;
+}
+.recording-head{display:flex;align-items:center;gap:12px;min-width:0}
+.recording-head .recording-dot{flex:0 0 13px;width:13px;height:13px;border-radius:50%;background:#f0445c;box-shadow:0 0 0 5px rgba(240,68,92,.15);animation:recPulse 2s infinite}
+.recording-detail{display:grid;gap:2px;flex:1;min-width:0}
+.recording-detail strong{font-size:19px}
+.recording-detail small{font-size:14px;color:#5a6586;line-height:1.35}
+#recording-timer{font:700 18px/1.5 ui-monospace,monospace;direction:ltr;white-space:nowrap}
+.recording-wave{height:53px;display:flex;justify-content:center;align-items:center;gap:3px;overflow:hidden;margin:8px 0 13px}
+.recording-wave span{width:4px;min-width:4px;height:36px;transform:scaleY(.15);transform-origin:center center;border-radius:6px;background:linear-gradient(to top,#675fea,#d28bef);transition:transform .15s ease-out;will-change:transform}
+.recording-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.recording-actions button{border:1px solid rgba(130,120,185,.35);border-radius:13px;min-height:44px;padding:7px 14px;background:rgba(255,255,255,.75);color:#35286b;font-weight:700}
+.recording-actions #recording-stop{color:white;background:linear-gradient(115deg,#6256ed,#a65bec)}
+.recording-actions .recording-cancel{color:#b42f4e}
+.recording-actions button:disabled{opacity:.5;cursor:not-allowed}
+.recording[data-state="paused"] .recording-head .recording-dot{background:#eca72c;animation:none}
+.recording[data-state="paused"] .recording-wave span{transform:scaleY(.15)!important}
+.recording-error{max-width:1010px;margin:9px auto;padding:13px 16px;background:#fff1e9;color:#9b3020;border-radius:14px;border:1px solid #f2b9a3;line-height:1.6}
+@keyframes recPulse{50%{opacity:.45;box-shadow:0 0 0 9px rgba(240,68,92,.08)}}
+#recording-indicator .recording-dot{animation:recPulse 2s infinite}
+/* Avoid expensive backdrop filters on every scrolling item. Retain glass on fixed panels. */
+.metric-card,.note-card,.editor-block,.recent-note,.quick-grid button,
+.studio-item,.expense-row,.reminder-row,.file-card,.stats-strip>div{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.fullscreen-sheet{
+  -webkit-overflow-scrolling:touch;
+  transition:transform .24s cubic-bezier(.2,.78,.2,1),visibility .24s ease!important;
+}
+.fullscreen-sheet.open{transform:translate3d(0,0,0)}
+.app-section{animation:pageFadeIn .18s ease-out both!important}
+@keyframes pageFadeIn{from{opacity:.6;transform:translate3d(0,5px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+.metric-card,.note-card,.quick-grid button,.primary,.ghost,.main-fab,
+.bottom-nav button,.side-nav button{
+  transition:transform .17s cubic-bezier(.2,.8,.2,1),background-color .16s ease,box-shadow .17s ease,opacity .17s ease!important
+}
+.metric-card:active,.note-card:active,.quick-grid button:active,.primary:active,.ghost:active,
+.main-fab:active{transform:scale(.985)!important}
+button{touch-action:manipulation}
+:focus-visible{outline:2px solid #7655e9;outline-offset:3px}
+@media (max-width:760px){
+ body{background-attachment:scroll!important;font-size:17px}
+ .hero-panel h2{font-size:27px;line-height:1.55}
+ .note-card h3{font-size:19px}
+ .note-card p{font-size:14px}
+ .note-card{min-height:154px}
+ .quick-capture-glass{min-height:0}
+ .quick-capture-head h2{font-size:19px}
+ .bottom-nav button span{font-size:11px}
+ .recording{margin:10px 12px;padding:13px}
+ .recording-wave{gap:2px}
+ .recording-actions{display:grid;grid-template-columns:1fr 1fr}
+ .recording-actions #recording-stop{grid-column:1/-1;grid-row:1}
+ .recording-actions #recording-pause,.recording-actions #recording-cancel{grid-row:2}
+ .note-title-input{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  .recording-dot{animation:none!important}
+  .recording-wave span{transition:none!important}
+  .app-section{animation:none!important}
+  *{scroll-behavior:auto!important}
+}
