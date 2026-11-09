@@ -97,4 +97,26 @@ async function init(){
   document.body.classList.add('ready');
 }
 
-document.addEventListener('DOMContentLoaded',init);
+function showStartupError(error) {
+  console.error('Startup failed', error);
+  document.body.classList.add('ready');
+  if (document.getElementById('app-startup-warning')) return;
+  const warn = document.createElement('div');
+  warn.id = 'app-startup-warning';
+  warn.dir = 'rtl';
+  warn.setAttribute('role', 'alert');
+  warn.style.cssText = 'position:fixed;top:12px;left:12px;right:12px;z-index:100000;background:#fff2db;border:1px solid #d9b879;border-radius:12px;padding:14px;font:15px Tahoma,Arial;color:#583d17';
+  const message = document.createElement('span');
+  message.textContent = 'تعذرت تهيئة بعض بيانات المفكرة. الواجهة ظاهرة ويمكن إعادة تشغيل التطبيق. لا تحذف بياناته.';
+  warn.appendChild(message);
+  document.body.appendChild(warn);
+}
+function startApp() {
+  Promise.resolve().then(init).catch(showStartupError);
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp, { once: true });
+} else {
+  startApp();
+}
+
