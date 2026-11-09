@@ -3,6 +3,7 @@ name: Build Mofakkirati Android APK
 on:
   push:
     branches:
+      - mofakkirati-v3-aref-audio-qa
       - mofakkirati-v2-20261109
   pull_request:
     branches:
@@ -37,6 +38,14 @@ jobs:
           "$SDKMANAGER" 'platforms;android-36' 'build-tools;36.0.0'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Bundle licensed Aref Ruqaa font offline
+        run: |
+          mkdir -p www/assets/fonts
+          curl --fail --location --retry 3 --silent --show-error https://raw.githubusercontent.com/google/fonts/main/ofl/arefruqaa/ArefRuqaa-Regular.ttf -o www/assets/fonts/ArefRuqaa-Regular.ttf
+          curl --fail --location --retry 3 --silent --show-error https://raw.githubusercontent.com/google/fonts/main/ofl/arefruqaa/ArefRuqaa-Bold.ttf -o www/assets/fonts/ArefRuqaa-Bold.ttf
+          curl --fail --location --retry 3 --silent --show-error https://raw.githubusercontent.com/google/fonts/main/ofl/arefruqaa/OFL.txt -o www/assets/fonts/OFL.txt
+          test "$(wc -c < www/assets/fonts/ArefRuqaa-Regular.ttf)" -gt 10000
+          test "$(wc -c < www/assets/fonts/ArefRuqaa-Bold.ttf)" -gt 10000
       - name: Bundle web application
         run: npm run build
       - name: Generate native Android shell
