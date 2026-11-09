@@ -11,6 +11,13 @@ async function startup(page) {
   expect(errors.filter(x=>!x.includes('serviceWorker'))).toEqual([]);
 }
 
+async function go(page, screen){
+  const nav=page.locator('[data-nav="'+screen+'"]:visible').first();
+  if(await nav.count())return nav.click();
+  await page.locator('[data-nav="home"]:visible').first().click();
+  await page.locator('[data-go="'+screen+'"]:visible').first().click();
+}
+
 test('All base navigation, panel buttons and glass styling load',async({page})=>{
   await startup(page);
   await expect(page.locator('.hero-panel')).toBeVisible();
@@ -24,12 +31,10 @@ test('All base navigation, panel buttons and glass styling load',async({page})=>
   await expect(page.locator('#note-blocks .editor-block')).toHaveCount(4);
   await page.locator('#note-close').click();
   for(const screen of ['home','notes','expenses','reminders','files','settings','studio']){
-    const nav=page.locator('.bottom-nav [data-nav="'+screen+'"]');
-    if(await nav.isVisible())await nav.click();
-    else await page.locator('.side-nav [data-nav="'+screen+'"]').click();
+    await go(page,screen);
     await expect(page.locator('[data-section="'+screen+'"]')).toBeVisible();
   }
-  await page.locator('[data-go=notes]').count().then(async n=>{if(n){await page.locator('[data-nav=home]').last().click();}});
+  await go(page,'home');
 });
 test('Save, reopen, reorder, favorite, pin and search rich notes',async({page})=>{
   await startup(page);
@@ -94,15 +99,14 @@ test('Reminders, settings, file manager and functional export',async({page})=>{
   await page.locator('.reminder-row').click();
   await expect(page.locator('#reminder-dialog')).toBeVisible();
   await page.locator('#reminder-cancel').click();
-  await page.locator('[data-nav=settings]').last().click();
+  await go(page,'settings');
   await page.locator('#appearance-select').selectOption('dark');
   await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.locator('#accent-select').selectOption('#0ea5e9');
   const dl=page.waitForEvent('download');
   await page.locator('#export-data').click();
   const result=await dl;expect(result.suggestedFilename()).toContain('.json');
-  await page.locator('[data-nav=files]').first().count().then(async()=>{await page.locator('[data-nav=home]').last().click();});
-  await page.locator('[data-go=files]').click();
+  await go(page,'files');
   const picker=page.waitForEvent('filechooser');
   await page.locator('#add-file-btn').click();
   const chooser=await picker;
@@ -122,10 +126,7 @@ test('Reminders, settings, file manager and functional export',async({page})=>{
 });
 test('PDF buttons: merge, extract, delete pages, rotate, reorder',async({page})=>{
   await startup(page);
-  await page.locator('.bottom-nav [data-nav=studio]').isVisible().then(async visible=>{
-    if(visible) await page.locator('.bottom-nav [data-nav=studio]').click();
-    else await page.locator('.side-nav [data-nav=studio]').click();
-  });
+  await go(page,'studio');
   await expect(page.locator('#studio-panel')).toBeVisible();
   const create=async()=>{
     const doc=await PDFDocument.create();doc.addPage([300,500]);doc.addPage([300,500]);
@@ -160,7 +161,7 @@ test('Audio recorder works, stops and adds playable voice note',async({page})=>{
   await expect(page.locator('#recording-indicator')).toBeHidden({timeout:18000});
   await expect(page.locator('#note-blocks audio')).toHaveCount(1);
   await page.locator('#note-save').click();
-  await page.locator('[data-nav=notes]').last().click();
+  await go(page,'notes');
   await expect(page.locator('#notes-container .note-card')).toHaveCount(1);
   await page.locator('#notes-container .note-card').click();
   await expect(page.locator('#note-blocks audio')).toHaveCount(1);
