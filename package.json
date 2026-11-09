@@ -1,6 +1,6 @@
 {
   "name": "my-life-organizer",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "description": "Offline-first personal life organizer built with HTML, CSS and Vanilla JavaScript, ready for Capacitor Android.",
   "scripts": {
@@ -15,7 +15,9 @@
     "@capacitor/android": "^8.0.0",
     "@capacitor/core": "^8.0.0",
     "@capacitor/local-notifications": "^8.0.0",
-    "pdf-lib": "^1.17.1"
+    "pdf-lib": "^1.17.1",
+    "docx-preview": "^0.4.1",
+    "dompurify": "^3.4.15"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.0.0",
