@@ -1,13 +1,18 @@
 {
   "appId": "com.mylife.organizer",
-  "appName": "My Life",
+  "appName": "مفكرتي",
   "webDir": "www",
   "android": {
     "allowMixedContent": false
   },
   "plugins": {
     "LocalNotifications": {
-      "presentationOptions": ["badge", "sound", "banner", "list"]
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "banner",
+        "list"
+      ]
     }
   }
 }
