@@ -116,7 +116,7 @@ function bindBlockInteractions() {
     }
     head.insertBefore(wrapper,head.querySelector('[data-remove-block]'));
   });
-  $('#note-blocks [data-remove-block]').forEach(btn => btn.onclick = () => btn.closest('.editor-block').remove());
+  $$('#note-blocks [data-remove-block]').forEach(btn => btn.onclick = () => btn.closest('.editor-block').remove());
   $$('#note-blocks [data-cmd]').forEach(btn => btn.onclick = () => {
     const rich = btn.closest('.editor-block').querySelector('.rich-block');
     rich.focus();
