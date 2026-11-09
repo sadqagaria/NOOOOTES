@@ -1,11 +1,11 @@
 import { exportDatabase, importDatabase, clearStore } from './storage.js';
 import { $, downloadBlob, toast, confirmDialog } from './utils.js';
 
-const ACCENTS=['#2563eb','#0ea5e9','#0f766e','#059669','#166534','#65a30d','#ca8a04','#ea580c','#f97316','#dc2626','#e11d48','#ec4899','#9333ea','#7c3aed','#4f46e5','#475569'];
+const ACCENTS=['#7655e9','#0ea5e9','#0f766e','#059669','#166534','#65a30d','#ca8a04','#ea580c','#f97316','#dc2626','#e11d48','#ec4899','#9333ea','#7c3aed','#4f46e5','#475569'];
 let refreshCallback=()=>{};
 export function setSettingsRefreshCallback(cb){refreshCallback=cb;}
 export function applySettings(){
-  const mode=localStorage.getItem('appearance')||'system';
+  const mode=localStorage.getItem('appearance')||'light';
   document.documentElement.dataset.theme=mode;
   document.documentElement.style.setProperty('--accent',localStorage.getItem('accent')||ACCENTS[0]);
   $('#appearance-select').value=mode; $('#accent-select').value=localStorage.getItem('accent')||ACCENTS[0];
