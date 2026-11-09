@@ -1,0 +1,19 @@
+/* ColorNote-inspired calm note cards; no ColorNote assets or branding are reused. */
+:root{--accent:#d9a825;--bg:#f6f3eb;--surface:#fffdf8;--surface-2:#f9f5e8;--border:#e9e0cd}
+.note-card{border-radius:13px;border:1px solid #e9ddb5;min-height:185px;background:#fff7d7;box-shadow:0 3px 9px rgba(104,84,32,.08)}
+.notes-list.grid .note-card:nth-child(7n+2){background:#e8f4ed;border-color:#d7e9df}
+.notes-list.grid .note-card:nth-child(7n+3){background:#fbe6df;border-color:#f2d4cb}
+.notes-list.grid .note-card:nth-child(7n+4){background:#e9eafa;border-color:#d8d8f2}
+.notes-list.grid .note-card:nth-child(7n+5){background:#e0f1f7;border-color:#cce3eb}
+.note-card:before{opacity:.018}
+.note-card h3{margin-top:12px;font-size:17px}
+.note-card p{color:#665e50}
+.note-card footer{color:#777063}
+.note-card .note-color{background:#ba9730}
+.note-blocks{background:#fffefa}
+.note-title-input{background:transparent}
+.hero-panel{background:#fff4d6;color:#503f1c;box-shadow:none;border:1px solid #eee0b5}
+.hero-panel p,.hero-date{color:#766746}
+.hero-orb{background:#f6e6b8;color:#a27b27;border-color:#ebd69d}
+.main-fab,.primary{background:#cc9920;color:#fff;box-shadow:0 5px 15px rgba(155,109,18,.2)}
+@media(max-width:760px){.note-card{min-height:145px;padding:14px}.note-card h3{font-size:16px}.note-card p{font-size:13px}.notes-list.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
