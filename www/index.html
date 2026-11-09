@@ -90,7 +90,7 @@
             <section class="settings-card"><h3>💾 النسخ الاحتياطي</h3><p>صدّر البيانات النصية والمنظمة إلى JSON، ثم استوردها لاحقًا.</p><div class="settings-actions"><button class="ghost" id="export-data">تصدير البيانات</button><button class="ghost" id="import-data">استيراد البيانات</button></div></section>
             <section class="settings-card danger-zone"><h3>🧹 التخزين</h3><p>حذف جميع البيانات المحلية من هذا الجهاز.</p><button class="ghost danger-text" id="clear-data">مسح كل البيانات</button></section>
             <section class="settings-card"><h3>🔒 الحماية</h3><p>هيكل App Lock جاهز للتطوير؛ PIN والبيومتريك سيتم توصيلهما بطبقة Native في الإصدار التالي.</p><button class="ghost" disabled>App Lock — قريبًا</button></section>
-            <section class="settings-card"><h3>ℹ️ عن التطبيق</h3><p><b>مفكرتي · Glass Edition</b><br>Version 1.2.0<br>Offline-first • Local-first</p></section>
+            <section class="settings-card"><h3>ℹ️ عن التطبيق</h3><p><b>مفكرتي · Glass Edition</b><br>Version 1.3.0<br>Offline-first • Local-first</p></section>
           </div>
         </section>
       </div>
@@ -106,7 +106,16 @@
     <header class="sheet-head"><button id="note-close" class="round-btn">←</button><input id="note-title" class="note-title-input" placeholder="عنوان الملاحظة"><div class="sheet-head-actions"><button id="note-pin" class="round-btn" title="تثبيت">📌</button><button id="note-favorite" class="round-btn" title="مفضلة">⭐</button><button id="note-save" class="primary">حفظ</button></div></header>
     <div class="note-meta"><select id="note-category"><option>Personal</option><option>Work</option><option>Travel</option><option>Ideas</option><option>Documents</option><option>Important</option><option>Other</option></select><input id="note-tags" placeholder="Tags مفصولة بفاصلة"><select id="note-bg"></select><select id="note-color"></select></div>
     <div class="add-toolbar"><button id="add-text">📝 نص</button><button id="add-rich">✍️ منسق</button><button id="add-image">🖼️ صورة</button><button id="add-camera">📷 كاميرا</button><button id="add-video">🎬 فيديو</button><button id="add-audio">🎧 صوت</button><button id="add-record">🎙️ تسجيل</button><button id="add-pdf">📕 PDF</button><button id="add-doc">📘 Word</button><button id="add-txt">📄 TXT</button><button id="add-link">🔗 رابط</button><button id="add-file">📎 ملف</button></div>
-    <div id="recording-indicator" class="recording" hidden><span></span> جاري التسجيل <button id="recording-stop">إيقاف وحفظ</button></div>
+    <div id="recording-error" class="recording-error" role="alert" hidden></div>
+    <div id="recording-indicator" class="recording" role="status" aria-live="polite" hidden>
+      <div class="recording-head"><span class="recording-dot"></span><div class="recording-detail"><strong>مسجل مفكرتي</strong><small id="recording-status">جاري التسجيل...</small></div><time id="recording-timer">00:00</time></div>
+      <div id="recording-wave" class="recording-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="recording-actions">
+        <button id="recording-pause" type="button">إيقاف مؤقت</button>
+        <button id="recording-stop" type="button" class="primary">إيقاف وحفظ</button>
+        <button id="recording-cancel" type="button" class="recording-cancel">إلغاء</button>
+      </div>
+    </div>
     <main id="note-blocks" class="note-blocks"></main>
     <footer class="sheet-footer"><button id="note-delete" class="ghost danger-text">حذف الملاحظة</button></footer>
   </div>
