@@ -48,6 +48,19 @@ jobs:
           test "$(wc -c < www/assets/fonts/ArefRuqaa-Bold.ttf)" -gt 10000
       - name: Bundle web application
         run: npm run build
+      - name: Install test browser and Linux dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Test all major UI controls on mobile and desktop
+        run: npm run test:ui
+      - name: Archive screenshots and traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mofakkirati-ui-test-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
       - name: Generate native Android shell
         run: npx cap add android
       - name: Patch permissions and sync
