@@ -23,7 +23,7 @@ test('All base navigation, panel buttons and glass styling load',async({page})=>
   await expect(page.locator('.hero-panel')).toBeVisible();
   const font=await page.locator('.hero-panel h2').evaluate(e=>getComputedStyle(e).fontFamily);
   expect(font).toContain('Aref');
-  await page.locator('[data-go=notes]').click();
+  await page.locator('[data-go=notes]').first().click();
   await expect(page.locator('[data-section=notes]')).toBeVisible();
   await page.locator('#new-note-btn').click();
   await expect(page.locator('#note-editor')).toHaveClass(/open/);
@@ -41,7 +41,7 @@ test('Save, reopen, reorder, favorite, pin and search rich notes',async({page})=
   await page.locator('#quick-capture-text').fill('ملاحظة سريعة تم حفظها للتجربة');
   await page.locator('#quick-capture-save').click();
   await expect(page.locator('#metric-notes')).toHaveText('1');
-  await page.locator('#new-note-btn').count().then(async()=>{await page.locator('[data-go=notes]').click();});
+  await page.locator('#new-note-btn').count().then(async()=>{await page.locator('[data-go=notes]').first().click();});
   await page.locator('#new-note-btn').click();
   await page.locator('#note-title').fill('مذكرة تجريبية');
   await page.locator('#note-blocks textarea').first().fill('تفاصيل اختبار الملاحظة');
